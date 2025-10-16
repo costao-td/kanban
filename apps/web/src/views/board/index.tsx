@@ -202,10 +202,8 @@ export default function BoardPage() {
     }
   }, [isSuccess, boardData, setValue]);
 
-  const [prevNovoPedidoCount, prevProntoParaColeta] = [
-    useRef<number>(0),
-    useRef<number>(0),
-  ];
+  const prevNovoPedidoCount = useRef<number | null>(null);
+  const prevProntoParaColeta = useRef<number | null>(null);
 
   useEffect(() => {
     if (!boardData) return;
@@ -223,18 +221,27 @@ export default function BoardPage() {
     const currentNewCount = novoPedidoList.cards.length;
     const currentDriverCount = readyPickupList.cards.length;
 
+    // Initialize refs with current counts on first run
+    if (prevNovoPedidoCount.current === null) {
+      prevNovoPedidoCount.current = currentNewCount;
+    }
+    if (prevProntoParaColeta.current === null) {
+      prevProntoParaColeta.current = currentDriverCount;
+    }
+
     if (currentNewCount > prevNovoPedidoCount.current) {
       const audio = new Audio("/sounds/new-order.wav");
-      audio.play();
+      void audio.play();
     }
 
     if (currentDriverCount > prevProntoParaColeta.current) {
       const audio = new Audio("/sounds/driver.wav");
-      audio.play();
+      void audio.play();
     }
 
     prevNovoPedidoCount.current = currentNewCount;
     prevProntoParaColeta.current = currentDriverCount;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardData?.lists.map((list) => list.cards.length).join(",")]);
 
   const openNewListForm = (publicBoardId: string) => {
