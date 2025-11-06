@@ -626,8 +626,10 @@ export const cardRouter = createTRPCRouter({
           code: "NOT_FOUND",
         });
 
-      return result;
-    }),
+      return {
+        ...result,
+        id: result.id,
+    }}),
   update: protectedProcedure
     .meta({
       openapi: {

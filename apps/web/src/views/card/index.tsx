@@ -321,6 +321,7 @@ export default function CardPage() {
                   </p>
                 )}
               </div>
+              
               {card && (
                 <>
                   <div className="mb-10 flex w-full max-w-2xl flex-col justify-between">
@@ -329,7 +330,7 @@ export default function CardPage() {
                       className="w-full space-y-6"
                     >
                       <div className="mt-2">
-                        <p className="my-2 mb-2 w-ful text-sm font-medium">Campo de Descrição</p>
+                        <p className="my-2 mb-2 w-ful text-sm font-medium">Observações</p>
                         <Editor
                           content={card.description}
                           onChange={(e) => setValue("description", e)}
@@ -415,10 +416,10 @@ export default function CardPage() {
                         </div>
                         {/* Laundry details section (read-only) */}
                         <div className="mb-4 mt-4 rounded-lg bg-neutral-100 p-4 shadow-sm dark:bg-neutral-800">
-                          <h3 className="mb-3 text-lg font-semibold text-neutral-800 dark:text-neutral-200">
-                            {`Detalhes do hóspede`}
+                          <h3 className="mb-3 text-lg font-semibold text-neutral-800 dark:text-neutral-200 flex gap-1">
+                            <div>Pedido Nº</div>
+                            <div>{card.id}</div>
                           </h3>
-
                           {/* Using a grid for clean alignment */}
                           <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
                             {/* Row 1: Nome */}
