@@ -295,6 +295,7 @@ export default function CardPage() {
 
   if (!cardId) return <></>;
 
+  const isAdmin = workspace.role === "admin";
   const isGuest = workspace.role === "guest";
   return (
     <>
@@ -339,7 +340,7 @@ export default function CardPage() {
                       </div>
                     </form>
 
-                    <div className="flex">{!isGuest && <Dropdown />}</div>
+                    <div className="flex">{!isGuest && <Dropdown isAdmin={isAdmin}/>}</div>
                   </>
                 )}
                 {!card && !isLoading && (
@@ -387,7 +388,7 @@ export default function CardPage() {
                           {!isGuest && (
                             <>
                               <div>
-                                <p>Motorista que coletou</p>
+                                <p>Retirado do Apartamento</p>
                                 <Select
                                   name="motoristaColeta"
                                   aria-label="Project status"
@@ -414,7 +415,7 @@ export default function CardPage() {
                                 </Select>
                               </div>
                               <div>
-                                <p>Motorista da entrega final</p>
+                                <p>Retirado da Lavanderia</p>
                                 <Select
                                   name="motoristaEntrega"
                                   aria-label="Project status"

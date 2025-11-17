@@ -8,19 +8,24 @@ import {
 import Dropdown from "~/components/Dropdown";
 import { useModal } from "~/providers/modal";
 
-export default function BoardDropdown() {
+interface BoardDropdownProps {
+  isAdmin: Boolean;
+}
+
+export default function BoardDropdown({isAdmin} : BoardDropdownProps) {
   const { openModal } = useModal();
 
   return (
     <Dropdown
       items={[
+        isAdmin && (
         {
           label: t`Add checklist`,
           action: () => openModal("ADD_CHECKLIST"),
           icon: (
             <HiOutlineCheckCircle className="h-[16px] w-[16px] text-dark-900" />
           ),
-        },
+        }),
         {
           label: t`Delete card`,
           action: () => openModal("DELETE_CARD"),
