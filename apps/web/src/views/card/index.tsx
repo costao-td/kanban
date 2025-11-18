@@ -445,7 +445,7 @@ export default function CardPage() {
                           )}
                         </div>
                         {/* Laundry details section (read-only) */}
-                        <div className="mb-4 mt-4 rounded-lg bg-neutral-100 border border-neutral-200 p-4 shadow-sm dark:bg-neutral-800">
+                        <div className="mb-4 mt-4 rounded-lg bg-neutral-50 border border-neutral-200 p-4 shadow-sm dark:bg-neutral-800">
                           <h3 className="mb-3 text-lg font-semibold text-neutral-800 dark:text-neutral-200 flex gap-1">
                             <div>Pedido nº</div>
                             <div>{card.id}</div>
