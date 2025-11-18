@@ -1,14 +1,14 @@
 ---
-name: Custom issue template
+name: ISSUE TD
 about: Describe this issue template's purpose here.
-title: ''
-labels: ''
+title: "[KBN] - "
+labels: IPA
 assignees: ''
 
 ---
 
-Caminho do arquivo:
 Critério de prioridade:
-Validação:@
+
 Qual área de negócio está envolvida:
-O que deve ser feito:
+
+## Descrição:
