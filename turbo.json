@@ -1,6 +1,9 @@
 {
   "$schema": "https://turborepo.org/schema.json",
   "ui": "tui",
+  "remoteCache": {
+    "enabled": false
+  },
   "tasks": {
     "topo": {
       "dependsOn": ["^topo"]

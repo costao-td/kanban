@@ -457,8 +457,6 @@ export const cardRouter = createTRPCRouter({
         return { newLabel: false };
       }
 
-      await cardRepo.bulkDeleteCardLabelRelationships(ctx.db, cardLabelIds.cardId);
-
       const newCardLabelRelationship =
         await cardRepo.createCardLabelRelationship(ctx.db, cardLabelIds);
 
@@ -626,8 +624,10 @@ export const cardRouter = createTRPCRouter({
           code: "NOT_FOUND",
         });
 
-      return result;
-    }),
+      return {
+        ...result,
+        id: result.id,
+    }}),
   update: protectedProcedure
     .meta({
       openapi: {
