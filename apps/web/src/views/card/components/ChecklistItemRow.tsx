@@ -116,7 +116,7 @@ export default function ChecklistItemRow({
       .trim();
 
   const handleToggleCompleted = () => {
-    //if (viewOnly) return;
+    if (viewOnly) return;
     setCompleted((prev) => !prev);
     updateItem.mutate({
       checklistItemPublicId: item.publicId,

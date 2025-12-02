@@ -17,12 +17,14 @@ interface LabelSelectorProps {
     leftIcon: React.ReactNode;
   }[];
   isLoading: boolean;
+  viewOnly?: boolean;
 }
 
 export default function LabelSelector({
   cardPublicId,
   labels,
   isLoading,
+  viewOnly,
 }: LabelSelectorProps) {
   const utils = api.useUtils();
   const { openModal } = useModal();
@@ -98,6 +100,8 @@ export default function LabelSelector({
         <CheckboxDropdown
           items={labels}
           handleSelect={(_, label) => {
+            if (viewOnly) return;
+
             const clicked = labels.find((l) => l.key === label.key);
             const isSelected = clicked?.selected;
 
@@ -114,7 +118,7 @@ export default function LabelSelector({
 
             addOrRemoveLabel.mutate({ cardPublicId, labelPublicId: label.key });
           }}
-          handleEdit={(labelPublicId) => openModal("EDIT_LABEL", labelPublicId)}
+          handleEdit={viewOnly ? undefined : (labelPublicId) => openModal("EDIT_LABEL", labelPublicId)}
           asChild
         >
           {selectedLabels.length ? (

@@ -146,7 +146,7 @@ const Filters = ({
           disabled={isLoading}
           iconLeft={<IoFilterOutline />}
         >
-          {t`Filter`}
+          Filtro
         </Button>
         {numOfFilters > 0 && (
           <button

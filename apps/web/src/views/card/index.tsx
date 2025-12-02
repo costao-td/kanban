@@ -364,6 +364,7 @@ export default function CardPage() {
                             cardPublicId={cardId ?? ""}
                             labels={deliveryLabels}
                             isLoading={!card}
+                            viewOnly={isGuest}
                           />
                           </div>
                           <div>
@@ -372,6 +373,7 @@ export default function CardPage() {
                             cardPublicId={cardId ?? ""}
                             labels={packageLabel}
                             isLoading={!card}
+                            viewOnly={isGuest}
                           />
                           </div>
                         </div>
