@@ -1,6 +1,6 @@
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, subHours } from "date-fns";
 import { de, enGB, es, fr, it, nl, pt } from "date-fns/locale";
 import {
   HiOutlineArrowLeft,
@@ -329,10 +329,16 @@ const ActivityList = ({
               </span>
               <span className="mx-1 text-light-900 dark:text-dark-800">·</span>
               <span className="space-x-1 text-light-900 dark:text-dark-800">
-                {formatDistanceToNow(new Date(activity.createdAt), {
+                {formatDistanceToNow(subHours(new Date(activity.createdAt), 3), {
                   addSuffix: true,
                   locale: currentDateLocale,
                 })}
+                {
+                  console.log(formatDistanceToNow(new Date(activity.createdAt), {
+                  addSuffix: true,
+                  locale: currentDateLocale,
+                }))
+                }
               </span>
             </p>
           </div>
