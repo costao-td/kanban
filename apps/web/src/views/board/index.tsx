@@ -365,6 +365,8 @@ export default function BoardPage() {
     );
   };
 
+  const isAdmin: boolean = workspace.role === "admin"
+
   return (
     <>
       <PageHead
@@ -399,20 +401,29 @@ export default function BoardPage() {
           )}
 
           <div className="order-1 mb-4 flex items-center justify-end space-x-2 md:order-2 md:mb-0">
+            <Button
+            type="button"
+            href="https://lavanderia.costao.com.br/?proprietario">
+              Pedido do Proprietário
+            </Button>
+            {isAdmin && (
             <UpdateBoardSlugButton
               handleOnClick={() => openModal("UPDATE_BOARD_SLUG")}
               isLoading={isLoading}
               workspaceSlug={workspace.slug ?? ""}
               boardSlug={boardData?.slug ?? ""}
             />
-            <VisibilityButton
+            )}
+            {isAdmin && (
+              <VisibilityButton
               visibility={boardData?.visibility ?? "private"}
               boardPublicId={boardId ?? ""}
               boardSlug={boardData?.slug ?? ""}
               queryParams={queryParams}
               isLoading={!boardData}
-              isAdmin={workspace.role === "admin"}
+              isAdmin={isAdmin}
             />
+            )}
             <Filters
               labels={boardData?.labels ?? []}
               members={
@@ -433,11 +444,13 @@ export default function BoardPage() {
               onClick={() => {
                 if (boardId) openNewListForm(boardId);
               }}
-              disabled={!boardData || workspace.role != "admin"}
+              disabled={!boardData || !isAdmin}
             >
-              {t`New list`}
+              Nova lista
             </Button>
+            {isAdmin && (
             <BoardDropdown isLoading={!boardData} />
+            )}
           </div>
         </div>
 
@@ -475,7 +488,7 @@ export default function BoardPage() {
                     droppableId="all-lists"
                     direction="horizontal"
                     type="LIST"
-                    isDropDisabled={workspace.role != "admin"}
+                    isDropDisabled={!isAdmin}
                   >
                     {(provided) => (
                       <div
@@ -492,6 +505,7 @@ export default function BoardPage() {
                             setSelectedPublicListId={(publicListId) =>
                               setSelectedPublicListId(publicListId)
                             }
+                            isAdmin={isAdmin}
                           >
                             <Droppable
                               droppableId={`${list.publicId}`}

@@ -18,6 +18,7 @@ interface ListProps {
   index: number;
   list: List;
   setSelectedPublicListId: (publicListId: PublicListId) => void;
+  isAdmin?: boolean;
 }
 
 interface List {
@@ -37,6 +38,7 @@ export default function List({
   index,
   list,
   setSelectedPublicListId,
+  isAdmin,
 }: ListProps) {
   const { openModal } = useModal();
 
@@ -94,6 +96,7 @@ export default function List({
               />
             </form>
             <div className="flex items-center">
+              {isAdmin && (
               <button
                 className="mx-1 inline-flex h-fit items-center rounded-md p-1 px-1 text-sm font-semibold text-dark-50 hover:bg-light-400 dark:hover:bg-dark-200"
                 onClick={() => openNewCardForm(list.publicId)}
@@ -103,8 +106,10 @@ export default function List({
                   aria-hidden="true"
                 />
               </button>
+              )}
               <div className="relative mr-1 inline-block">
-                <Dropdown
+                {isAdmin && (
+                  <Dropdown
                   items={[
                     {
                       label: t`Add a card`,
@@ -124,6 +129,7 @@ export default function List({
                 >
                   <HiEllipsisHorizontal className="h-5 w-5 text-dark-900" />
                 </Dropdown>
+                )}
               </div>
             </div>
           </div>

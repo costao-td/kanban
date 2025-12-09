@@ -1,0 +1,22 @@
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: kan-db
+    environment:
+      - POSTGRES_DB=kan_db
+      - POSTGRES_USER=kan
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - 5432:5432
+    volumes:
+      - kan_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - kan-network
+
+networks:
+  kan-network:
+
+volumes:
+  kan_postgres_data:

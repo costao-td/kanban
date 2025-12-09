@@ -17,12 +17,14 @@ interface LabelSelectorProps {
     leftIcon: React.ReactNode;
   }[];
   isLoading: boolean;
+  viewOnly?: boolean;
 }
 
 export default function LabelSelector({
   cardPublicId,
   labels,
   isLoading,
+  viewOnly,
 }: LabelSelectorProps) {
   const utils = api.useUtils();
   const { openModal } = useModal();
@@ -34,26 +36,39 @@ export default function LabelSelector({
 
     const previousCard = utils.card.byId.getData({ cardPublicId });
 
+    if (!previousCard) return {previousCard};
+
+    const alreadyOnCard = previousCard.labels?.some(
+      (l: any) => l.publicId === update.labelPublicId,
+    );
+
+    let optimisticLabels: { publicId: string; name: string; colourCode?: string }[] = [];
+
+    if (alreadyOnCard) {
+      optimisticLabels = (previousCard.labels || []).filter(
+        (l: any) => l.publicId !== update.labelPublicId,
+      );
+    } else {
+      const labelInfo = labels.find((label) => label.key === update.labelPublicId);
+
+      const newLabel = {
+        publicId: update.labelPublicId,
+        name: labelInfo ? labelInfo.value : "",
+        colourCode: labelInfo ? ((labelInfo as any).colourCode ?? "") : "",
+      };
+
+      optimisticLabels = [
+        ...(previousCard.labels || []),
+        newLabel,
+      ];
+    }
+
     utils.card.byId.setData({ cardPublicId }, (oldCard) => {
       if (!oldCard) return oldCard;
 
-      const labelToAdd = labels.find(
-        (label) => label.key === update.labelPublicId,
-      );
-
-      const updatedLabels = labelToAdd
-        ? [
-            {
-              publicId: labelToAdd.key,
-              name: labelToAdd.value,
-              colourCode: (labelToAdd as any).colourCode ?? "",
-            },
-          ]
-        : [];
-
       return {
         ...oldCard,
-        labels: updatedLabels,
+        labels: optimisticLabels,
       };
     });
 
@@ -85,9 +100,25 @@ export default function LabelSelector({
         <CheckboxDropdown
           items={labels}
           handleSelect={(_, label) => {
+            if (viewOnly) return;
+
+            const clicked = labels.find((l) => l.key === label.key);
+            const isSelected = clicked?.selected;
+
+            if (!isSelected) {
+              labels
+                .filter((l) => l.selected && l.key !== label.key)
+                .forEach((other) => {
+                  addOrRemoveLabel.mutate({
+                    cardPublicId,
+                    labelPublicId: other.key,
+                  });
+                });
+            }
+
             addOrRemoveLabel.mutate({ cardPublicId, labelPublicId: label.key });
           }}
-          handleEdit={(labelPublicId) => openModal("EDIT_LABEL", labelPublicId)}
+          handleEdit={viewOnly ? undefined : (labelPublicId) => openModal("EDIT_LABEL", labelPublicId)}
           asChild
         >
           {selectedLabels.length ? (
@@ -97,17 +128,11 @@ export default function LabelSelector({
                   <Badge value={label.value} iconLeft={label.leftIcon} />
                 </Menu.Button>
               ))}
-              {/* <Menu.Button>
-                <Badge
-                  value={t`Add label`}
-                  iconLeft={<HiMiniPlus size={14} />}
-                />
-              </Menu.Button> */}
             </div>
           ) : (
             <Menu.Button className="flex h-full w-full items-center rounded-[5px] border-[1px] border-light-50 pl-2 text-left text-sm text-neutral-900 hover:border-light-300 hover:bg-light-200 dark:border-dark-50 dark:text-dark-1000 dark:hover:border-dark-200 dark:hover:bg-dark-100">
               <HiMiniPlus size={22} className="pr-2" />
-              {t`Add label`}
+              Adicionar tipo
             </Menu.Button>
           )}
         </CheckboxDropdown>

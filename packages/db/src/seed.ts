@@ -128,6 +128,18 @@ export async function seedLabels(db: ReturnType<typeof createDrizzleClient>) {
         colourCode: "#0284c7",
         boardId: 1,
       },
+            {
+        publicId: "8nz54bj78de3",
+        name: "Cabide",
+        colourCode: "#EB7542",
+        boardId: 1,
+      },
+            {
+        publicId: "6f0s6rxe0pfe",
+        name: "Dobrado",
+        colourCode: "#42EBC9",
+        boardId: 1,
+      },
     ];
 
     await db.insert(labels).values(seedData).onConflictDoNothing();
