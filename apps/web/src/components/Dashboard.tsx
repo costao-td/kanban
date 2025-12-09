@@ -23,7 +23,7 @@ interface DashboardProps {
 }
 
 export function getDashboardLayout(
-  page: React.ReactElement,
+  page: React.ReactElement<any>,
   rightPanel?: React.ReactNode,
   hasRightPanel = false,
 ) {

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Listbox, Transition } from "@headlessui/react";
 import { t } from "@lingui/core/macro";
 import { Plural, Trans } from "@lingui/react/macro";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, type JSX } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FaTrello } from "react-icons/fa";
 import {

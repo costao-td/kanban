@@ -25,8 +25,20 @@ const config = {
     "@kan/stripe",
   ],
 
+  serverExternalPackages: [
+    "pino",
+    "pino-pretty",
+    "next-logger",
+    "thread-stream",
+    "tap",
+    "why-is-node-runnning",
+    "pino-elasticsearch",
+    "fastbench",
+    "desm"
+  ],
+
   /** We already do linting and typechecking as separate tasks in CI */
-  eslint: { ignoreDuringBuilds: true },
+  // eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
 
   images: {
