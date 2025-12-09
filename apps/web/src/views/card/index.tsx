@@ -68,6 +68,17 @@ export function CardRightPanel() {
       };
     }) ?? [];
 
+  const deliveryLabelNames = ["Normal", "Express"]
+  const packageLabelNames = ["Cabide", "Dobrado"]
+
+  const deliveryLabels = formattedLabels.filter(label =>
+    deliveryLabelNames.includes(label.value)
+  );
+
+  const packageLabel = formattedLabels.filter(label =>
+    packageLabelNames.includes(label.value)
+  );
+
   const formattedLists =
     board?.lists.map((list) => ({
       key: list.publicId,
@@ -118,7 +129,12 @@ export function CardRightPanel() {
         <p className="my-2 mb-2 w-[100px] text-sm font-medium">{t`Labels`}</p>
         <LabelSelector
           cardPublicId={cardId ?? ""}
-          labels={formattedLabels}
+          labels={deliveryLabels}
+          isLoading={!card}
+        />
+        <LabelSelector
+          cardPublicId={cardId ?? ""}
+          labels={packageLabel}
           isLoading={!card}
         />
       </div>
@@ -182,6 +198,17 @@ export default function CardPage() {
         leftIcon: <LabelIcon colourCode={label.colourCode} />,
       };
     }) ?? [];
+
+  const deliveryLabelNames = ["Normal", "Express"]
+  const packageLabelNames = ["Cabide", "Dobrado"]
+
+  const deliveryLabels = formattedLabels.filter(label =>
+    deliveryLabelNames.includes(label.value)
+  );
+
+  const packageLabel = formattedLabels.filter(label =>
+    packageLabelNames.includes(label.value)
+  );
 
   const updateCard = api.card.update.useMutation({
     onError: () => {
@@ -268,6 +295,7 @@ export default function CardPage() {
 
   if (!cardId) return <></>;
 
+  const isAdmin = workspace.role === "admin";
   const isGuest = workspace.role === "guest";
   return (
     <>
@@ -312,7 +340,7 @@ export default function CardPage() {
                       </div>
                     </form>
 
-                    <div className="flex">{!isGuest && <Dropdown />}</div>
+                    <div className="flex">{!isGuest && <Dropdown isAdmin={isAdmin}/>}</div>
                   </>
                 )}
                 {!card && !isLoading && (
@@ -321,31 +349,34 @@ export default function CardPage() {
                   </p>
                 )}
               </div>
+              
               {card && (
                 <>
-                  <div className="mb-10 flex w-full max-w-2xl flex-col justify-between">
+                  <div className="mb-10 flex w-full flex-col justify-between">
                     <form
                       onSubmit={handleSubmit(onSubmit)}
                       className="w-full space-y-6"
                     >
-                      <div className="mt-2">
-                        <p className="my-2 mb-2 w-ful text-sm font-medium">Campo de Descrição</p>
-                        <Editor
-                          content={card.description}
-                          onChange={(e) => setValue("description", e)}
-                          onBlur={() => handleSubmit(onSubmit)()}
-                          workspaceMembers={board?.workspace.members ?? []}
-                        />
-                        <div>
-                          <p className="my-2 mb-2 pt-2 w-[100px] text-sm font-medium">{t`Labels`}</p>
+                        <div className="flex items-center gap-10">
+                          <div>
+                          <p className="my-2 mb-2 pt-2 w-full text-sm font-medium">Tipo de Serviço</p>
                           <LabelSelector
                             cardPublicId={cardId ?? ""}
-                            labels={formattedLabels}
+                            labels={deliveryLabels}
                             isLoading={!card}
                           />
+                          </div>
+                          <div>
+                          <p className="my-2 mb-2 pt-2 w-full text-sm font-medium">Tipo de Entrega</p>
+                          <LabelSelector
+                            cardPublicId={cardId ?? ""}
+                            labels={packageLabel}
+                            isLoading={!card}
+                          />
+                          </div>
                         </div>
 
-                        <div className="flex flex-col justify-between gap-4 pt-8 text-sm md:flex-row md:items-center">
+                        <div className="flex flex-col justify-between gap-4 pt-4 text-sm md:flex-row md:items-center">
                           <div>
                             <p className="pb-2">Mudar Status do pedido</p>
                             <ListSelector
@@ -357,7 +388,7 @@ export default function CardPage() {
                           {!isGuest && (
                             <>
                               <div>
-                                <p>Motorista que coletou</p>
+                                <p>Retirado do Apartamento</p>
                                 <Select
                                   name="motoristaColeta"
                                   aria-label="Project status"
@@ -384,7 +415,7 @@ export default function CardPage() {
                                 </Select>
                               </div>
                               <div>
-                                <p>Motorista da entrega final</p>
+                                <p>Retirado da Lavanderia</p>
                                 <Select
                                   name="motoristaEntrega"
                                   aria-label="Project status"
@@ -414,11 +445,11 @@ export default function CardPage() {
                           )}
                         </div>
                         {/* Laundry details section (read-only) */}
-                        <div className="mb-4 mt-4 rounded-lg bg-neutral-100 p-4 shadow-sm dark:bg-neutral-800">
-                          <h3 className="mb-3 text-lg font-semibold text-neutral-800 dark:text-neutral-200">
-                            {`Detalhes do hóspede`}
+                        <div className="mb-4 mt-4 rounded-lg bg-neutral-50 border border-neutral-200 p-4 shadow-sm dark:bg-neutral-800">
+                          <h3 className="mb-3 text-lg font-semibold text-neutral-800 dark:text-neutral-200 flex gap-1">
+                            <div>Pedido nº</div>
+                            <div>{card.id}</div>
                           </h3>
-
                           {/* Using a grid for clean alignment */}
                           <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
                             {/* Row 1: Nome */}
@@ -459,8 +490,16 @@ export default function CardPage() {
                             </span> */}
                           </div>
                         </div>
-                      </div>
                     </form>
+                  </div>
+                  <div className="pb-8">
+                    <p className="my-2 mb-2 w-ful text-sm font-medium">Observações</p>
+                    <Editor
+                      content={card.description}
+                      onChange={(e) => setValue("description", e)}
+                      onBlur={() => handleSubmit(onSubmit)()}
+                      workspaceMembers={board?.workspace.members ?? []}
+                    />
                   </div>
                   <Checklists
                     checklists={card.checklists.map((checklist) => ({
