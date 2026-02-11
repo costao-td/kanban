@@ -31,6 +31,7 @@ import ListSelector from "./components/ListSelector";
 import MemberSelector from "./components/MemberSelector";
 import { NewChecklistForm } from "./components/NewChecklistForm";
 import NewCommentForm from "./components/NewCommentForm";
+import Input from "~/components/Input";
 
 interface FormValues {
   cardId: string;
@@ -166,6 +167,7 @@ export default function CardPage() {
   const [activeChecklistForm, setActiveChecklistForm] = useState<string | null>(
     null,
   );
+  const [showActivity, setShowActivity] = useState<boolean>(false);
 
   const cardId = Array.isArray(router.query.cardId)
     ? router.query.cardId[0]
@@ -531,13 +533,26 @@ export default function CardPage() {
                     <div className="mt-6">
                       <NewCommentForm cardPublicId={cardId} />
                     </div>
-                    <div>
-                      <ActivityList
-                        cardPublicId={cardId}
-                        activities={activities ?? []}
-                        isLoading={!card}
-                        isAdmin={workspace.role === "admin"}
+                    <div className="pt-4">
+                      <div>
+                      <input                      
+                      type="checkbox"
+                      onChange={(e) => (
+                        setShowActivity(e.target.checked)
+                      )}
+                      className="w-[20] h-[20] rounded-md border-neutral-400 text-black"
+                      id="activity"
                       />
+                      <label htmlFor="activity" className="p-4 text-neutral-600 text-sm">Mostrar atividades</label>
+                      </div>
+                      {showActivity && (
+                        <ActivityList
+                          cardPublicId={cardId}
+                          activities={activities ?? []}
+                          isLoading={!card}
+                          isAdmin={workspace.role === "admin"}
+                        />
+                      )}
                     </div>
                   </div>
                 </>
