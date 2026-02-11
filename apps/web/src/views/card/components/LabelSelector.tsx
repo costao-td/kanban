@@ -114,6 +114,8 @@ export default function LabelSelector({
                     labelPublicId: other.key,
                   });
                 });
+            } else {
+              return;
             }
 
             addOrRemoveLabel.mutate({ cardPublicId, labelPublicId: label.key });
