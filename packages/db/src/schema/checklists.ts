@@ -4,6 +4,7 @@ import {
   bigserial,
   boolean,
   integer,
+  jsonb,
   numeric,
   pgTable,
   timestamp,
@@ -62,6 +63,7 @@ export const checklistItems = pgTable("card_checklist_item", {
   wash: boolean("wash").notNull().default(false),
   iron: boolean("iron").notNull().default(false),
   completed: boolean("completed").notNull().default(false),
+  basketItem: jsonb("basketItem").$type<{ name: string; quantity: number }[] | null>(),
   index: integer("index").notNull(),
   checklistId: bigint("checklistId", { mode: "number" })
     .notNull()

@@ -7,6 +7,11 @@ import ChecklistItemRow from "./ChecklistItemRow";
 import ChecklistNameInput from "./ChecklistNameInput";
 import NewChecklistItemForm from "./NewChecklistItemForm";
 
+interface BasketItemProps {
+  name: string;
+  quantity: number;
+}
+
 interface ChecklistItem {
   publicId: string;
   title: string;
@@ -16,6 +21,7 @@ interface ChecklistItem {
   itemValue: number;
   itemIdentity: string;
   quantity: number;
+  basketItem: BasketItemProps[];
 }
 
 interface Checklist {
@@ -30,6 +36,7 @@ interface ChecklistsProps {
   activeChecklistForm?: string | null;
   setActiveChecklistForm?: (id: string | null) => void;
   viewOnly?: boolean;
+  deliveryType: string;
 }
 
 export default function Checklists({
@@ -38,8 +45,11 @@ export default function Checklists({
   activeChecklistForm,
   setActiveChecklistForm,
   viewOnly,
+  deliveryType
 }: ChecklistsProps) {
   const { openModal } = useModal();
+
+  const BASKET_ITEM_PRICE = deliveryType === "Express" ? 10 : 5
 
   if (!checklists || checklists.length === 0) return null;
 
@@ -129,9 +139,11 @@ export default function Checklists({
                       itemIdentity: item.itemIdentity,
                       itemValue: item.itemValue,
                       completed: item.completed,
+                      basketItem: item.basketItem,
                     }}
                     cardPublicId={cardPublicId}
                     viewOnly={viewOnly}
+                    basketItemPrice={BASKET_ITEM_PRICE}
                   />
                 ))}
               </div>
@@ -140,7 +152,9 @@ export default function Checklists({
                 {checklist.items
                   .reduce(
                     (acc, item) =>
-                      acc + (item.itemValue || 0) * (item.quantity || 0),
+                      acc +
+                      (item.quantity || 0) * (item.itemValue || 0) +
+                      (item.basketItem?.reduce((sum, bi) => sum + (bi.quantity || 0), 0) || 0) * BASKET_ITEM_PRICE,
                     0,
                   )
                   .toFixed(2)}

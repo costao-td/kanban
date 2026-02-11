@@ -37,6 +37,12 @@ export function CardModal({
 
   const labels = data?.labels ?? [];
 
+  const deliveryLabelNames = ["Normal", "Express"];
+  const deliveryLabel = labels.find((label) =>
+    deliveryLabelNames.includes(label.name)
+  );
+  const deliveryType = deliveryLabel?.name || "Normal";
+
   const handleScroll = () => {
     if (!scrollRef.current) return;
 
@@ -133,6 +139,7 @@ export function CardModal({
                   checklists={data.checklists}
                   cardPublicId={cardPublicId ?? ""}
                   viewOnly
+                  deliveryType={deliveryType}
                 />
               )}
               <div className="border-t-[1px] border-light-600 pb-4 pt-12 dark:border-dark-400">

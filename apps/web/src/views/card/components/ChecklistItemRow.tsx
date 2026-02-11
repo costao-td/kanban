@@ -8,6 +8,11 @@ import { usePopup } from "~/providers/popup";
 import { useWorkspace } from "~/providers/workspace";
 import { api } from "~/utils/api";
 
+interface BasketItemProps {
+  name: string,
+  quantity: number,
+}
+
 interface ChecklistItemRowProps {
   item: {
     publicId: string;
@@ -18,15 +23,18 @@ interface ChecklistItemRowProps {
     wash: boolean;
     iron: boolean;
     completed: boolean;
+    basketItem: BasketItemProps[];
   };
   cardPublicId: string;
   viewOnly?: boolean;
+  basketItemPrice?: number;
 }
 
 export default function ChecklistItemRow({
   item,
   cardPublicId,
   viewOnly,
+  basketItemPrice,
 }: ChecklistItemRowProps) {
   const utils = api.useUtils();
   const { showPopup } = usePopup();
@@ -37,8 +45,9 @@ export default function ChecklistItemRow({
   const [completed, setCompleted] = useState(false);
   const [iron, setIron] = useState(item.iron);
   const [wash, setWash] = useState(item.wash);
-  const [itemValue, setItemValue] = useState(item.itemValue);
-  const [quantity, setQuantity] = useState(item.quantity);
+  const [itemValue, setItemValue] = useState(item.itemValue || 0);
+  const [quantity, setQuantity] = useState(item.quantity || 1);
+  const [basketItemsQuantity, setBasketItemsQuantity] = useState(item.basketItem || [])
 
   const updateItem = api.checklist.updateItem.useMutation({
     onMutate: async (vars) => {
@@ -155,7 +164,8 @@ export default function ChecklistItemRow({
   };
 
   const handleDelete = () => {
-    if (viewOnly) return;
+    const confirmDeleteItem = window.confirm("Deseja deletar esse item?")
+    if (viewOnly || !confirmDeleteItem) return;
     deleteItem.mutate({ checklistItemPublicId: item.publicId });
   };
 
@@ -301,11 +311,63 @@ export default function ChecklistItemRow({
             <div className="flex items-center gap-1.5 font-semibold text-neutral-900 dark:text-gray-100">
               <span>Total:</span>
               <span className="rounded bg-blue-50 px-2 py-1 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                R$ {(itemValue * quantity).toFixed(2)}
+                R$ {(((itemValue || 0) * (quantity || 1)) + (item.basketItem?.reduce((sum, bi) => sum + (bi.quantity || 0), 0) || 0) * (basketItemPrice || 5)).toFixed(2)}
               </span>
             </div>
           </div>
         </div>
+        {item?.basketItem?.length > 0 && (
+          <div className="p-4">
+            <p className="mb-2 text-neutral-700 dark:text-gray-100">Itens do cesto para passar</p>
+            <div className="flex flex-wrap gap-2">
+              {item?.basketItem?.map((i, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 rounded border border-light-300 bg-light-50 px-3 py-1.5 text-sm dark:border-dark-600 dark:bg-dark-800"
+                >
+                  <span className="text-neutral-700 dark:text-gray-300">{i.name}</span>
+                  <input
+                    type="number"
+                    value={i.quantity}
+                    min={1}
+                    disabled={viewOnly}
+                    className="w-14 rounded border border-light-300 bg-white px-2 py-0.5 text-center text-sm dark:border-dark-600 dark:bg-dark-700 dark:text-gray-100"
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10) || 1;
+                      const updatedBasketItems = basketItemsQuantity.map((basketItem, idx) => 
+                        idx === index ? { ...basketItem, quantity: val } : basketItem
+                      );
+                      setBasketItemsQuantity(updatedBasketItems);
+                      updateItem.mutate({
+                        checklistItemPublicId: item.publicId,
+                        basketItem: updatedBasketItems,
+                      });
+                    }}
+                  />
+                  {!viewOnly && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const confirmed = window.confirm("Deseja excluir este item?")
+                        if (!confirmed) return;
+                        const updatedBasketItems = basketItemsQuantity.filter((_, idx) => idx !== index);
+                        setBasketItemsQuantity(updatedBasketItems);
+                        updateItem.mutate({
+                          checklistItemPublicId: item.publicId,
+                          basketItem: updatedBasketItems,
+                        });
+                      }}
+                      className="text-neutral-500 hover:text-red-600 transition-colors"
+                      aria-label="Remover item"
+                    >
+                      <HiXMark size={16} />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+        </div>
+          )}
       </div>
     </div>
   );

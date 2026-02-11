@@ -1,0 +1,1 @@
+ALTER TABLE "card_checklist_item" ADD COLUMN "basketItem" jsonb;

@@ -210,6 +210,8 @@ export default function CardPage() {
     packageLabelNames.includes(label.value)
   );
 
+  const activeDeliveryLabels = (deliveryLabels?.filter((l: any) => l.selected))[0]
+
   const updateCard = api.card.update.useMutation({
     onError: () => {
       showPopup({
@@ -520,6 +522,7 @@ export default function CardPage() {
                     viewOnly={
                       workspace.role != "admin" && workspace.role != "member"
                     }
+                    deliveryType={activeDeliveryLabels.value}
                   />
                   <div className="border-t-[1px] border-light-300 pt-12 dark:border-dark-300">
                     <h2 className="text-md pb-4 font-medium text-light-1000 dark:text-dark-1000">
