@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Menu, Transition } from "@headlessui/react";
 import { t } from "@lingui/core/macro";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { authClient } from "@kan/auth/client";
@@ -28,6 +28,12 @@ export default function UserMenu({
   isCollapsed = false,
   onCloseSideNav,
 }: UserMenuProps) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const router = useRouter();
   const { themePreference, switchTheme } = useTheme();
   const { openModal } = useModal();
@@ -59,7 +65,7 @@ export default function UserMenu({
   return (
     <Menu as="div" className="relative inline-block w-full text-left">
       <div>
-        {isLoading ? (
+        {isLoading || !isMounted ? (
           <div className={twMerge(!isCollapsed && "flex")}>
             <div className="h-[30px] w-[30px] animate-pulse rounded-full bg-light-200 dark:bg-dark-200" />
             <div
