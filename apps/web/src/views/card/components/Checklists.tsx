@@ -49,7 +49,8 @@ export default function Checklists({
 }: ChecklistsProps) {
   const { openModal } = useModal();
 
-  const BASKET_ITEM_PRICE = deliveryType === "Express" ? 10 : 5
+  const EXPRESS_MULTIPLYIER: number = 2
+  const BASKET_ITEM_PRICE: number = 5
 
   if (!checklists || checklists.length === 0) return null;
 
@@ -149,14 +150,14 @@ export default function Checklists({
               </div>
               <div className="flex w-full min-w-full justify-end pr-8 text-sm font-medium text-light-900 dark:text-dark-700">
                 Valor Total:{" "}
-                {checklist.items
+                {(checklist.items
                   .reduce(
                     (acc, item) =>
                       acc +
                       (item.quantity || 0) * (item.itemValue || 0) +
                       (item.basketItem?.reduce((sum, bi) => sum + (bi.quantity || 0), 0) || 0) * BASKET_ITEM_PRICE,
                     0,
-                  )
+                  ) * (deliveryType === "Express" ? EXPRESS_MULTIPLYIER : 1))
                   .toFixed(2)}
               </div>
               {activeChecklistForm === checklist.publicId && !viewOnly && (
