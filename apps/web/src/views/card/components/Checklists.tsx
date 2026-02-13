@@ -149,7 +149,7 @@ export default function Checklists({
                 ))}
               </div>
               <div className="flex w-full min-w-full justify-end pr-8 text-sm font-medium text-light-900 dark:text-dark-700">
-                Valor Total:{" "}
+                Valor Total: {"R$ "}
                 {(checklist.items
                   .reduce(
                     (acc, item) =>
@@ -160,6 +160,11 @@ export default function Checklists({
                   ) * (deliveryType === "Express" ? EXPRESS_MULTIPLYIER : 1))
                   .toFixed(2)}
               </div>
+              {deliveryType === "Express" && (
+                <p className="flex w-full min-w-full justify-end pr-8 text-xs text-light-900 dark:text-dark-700">
+                  Taxa Express Incluída
+                </p>
+              )}
               {activeChecklistForm === checklist.publicId && !viewOnly && (
                 <div className="ml-1">
                   <NewChecklistItemForm

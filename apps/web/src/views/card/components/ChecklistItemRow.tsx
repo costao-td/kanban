@@ -4,6 +4,7 @@ import ContentEditable from "react-contenteditable";
 import { HiXMark } from "react-icons/hi2";
 import { twMerge } from "tailwind-merge";
 
+import QuantityInput from "~/components/QuantityInput";
 import { usePopup } from "~/providers/popup";
 import { useWorkspace } from "~/providers/workspace";
 import { api } from "~/utils/api";
@@ -277,29 +278,20 @@ export default function ChecklistItemRow({
 
           {/* Values */}
           <div className="flex flex-wrap items-center gap-3 text-sm">
-            <label className="flex items-center gap-1.5 text-neutral-700 dark:text-gray-300">
+            <div className="flex items-center gap-1.5 text-neutral-700 dark:text-gray-300">
               <span className="font-medium">Qtd:</span>
-              <input
-                type="number"
+              <QuantityInput
                 value={quantity}
-                min={1}
                 disabled={viewOnly}
-                onChange={(e) => {
-                  const val = parseInt(e.target.value, 10) || 1;
+                onChange={(val) => {
                   setQuantity(val);
                   updateItem.mutate({
                     checklistItemPublicId: item.publicId,
                     quantity: val,
                   });
                 }}
-                className={twMerge(
-                  "w-16 rounded border px-2 py-1 text-center text-sm",
-                  "border-light-300 bg-light-50 text-neutral-900",
-                  "dark:border-dark-600 dark:bg-dark-800 dark:text-gray-100",
-                  viewOnly ? "cursor-not-allowed opacity-50" : "cursor-text hover:border-light-400 dark:hover:border-dark-500",
-                )}
               />
-            </label>
+            </div>
 
             <div className="flex items-center gap-1.5 text-neutral-700 dark:text-gray-300">
               <span className="font-medium">Valor:</span>
@@ -326,14 +318,10 @@ export default function ChecklistItemRow({
                   className="flex items-center gap-2 rounded border border-light-300 bg-light-50 px-3 py-1.5 text-sm dark:border-dark-600 dark:bg-dark-800"
                 >
                   <span className="text-neutral-700 dark:text-gray-300">{i.name}</span>
-                  <input
-                    type="number"
+                  <QuantityInput
                     value={i.quantity}
-                    min={1}
                     disabled={viewOnly}
-                    className="w-14 rounded border border-light-300 bg-white px-2 py-0.5 text-center text-sm dark:border-dark-600 dark:bg-dark-700 dark:text-gray-100"
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value, 10) || 1;
+                    onChange={(val) => {
                       const updatedBasketItems = basketItemsQuantity.map((basketItem, idx) => 
                         idx === index ? { ...basketItem, quantity: val } : basketItem
                       );
