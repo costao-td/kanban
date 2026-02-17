@@ -524,7 +524,7 @@ export default function CardPage() {
                     viewOnly={
                       workspace.role != "admin" && workspace.role != "member"
                     }
-                    deliveryType={activeDeliveryLabels.value}
+                    deliveryType={activeDeliveryLabels?.value === "Express" ? "Express" : "Normal"}
                   />
                   <div className="border-t-[1px] border-light-300 pt-12 dark:border-dark-300">
                     <h2 className="text-md pb-4 font-medium text-light-1000 dark:text-dark-1000">
@@ -541,9 +541,9 @@ export default function CardPage() {
                         setShowActivity(e.target.checked)
                       )}
                       className="w-[20] h-[20] rounded-md border-neutral-400 text-black"
-                      id="activity"
+                      id="show-activity-checkbox"
                       />
-                      <label htmlFor="activity" className="p-4 text-neutral-600 text-sm">Mostrar atividades</label>
+                      <label htmlFor="show-activity-checkbox" className="p-4 text-neutral-600 text-sm">Mostrar atividades</label>
                       </div>
                       {showActivity && (
                         <ActivityList

@@ -8,11 +8,7 @@ import QuantityInput from "~/components/QuantityInput";
 import { usePopup } from "~/providers/popup";
 import { useWorkspace } from "~/providers/workspace";
 import { api } from "~/utils/api";
-
-interface BasketItemProps {
-  name: string,
-  quantity: number,
-}
+import { BasketItemProps } from "./Checklists";
 
 interface ChecklistItemRowProps {
   item: {
@@ -24,7 +20,7 @@ interface ChecklistItemRowProps {
     wash: boolean;
     iron: boolean;
     completed: boolean;
-    basketItem: BasketItemProps[];
+    basketItem: BasketItemProps[] | null;
   };
   cardPublicId: string;
   viewOnly?: boolean;
@@ -48,7 +44,7 @@ export default function ChecklistItemRow({
   const [wash, setWash] = useState(item.wash);
   const [itemValue, setItemValue] = useState(item.itemValue || 0);
   const [quantity, setQuantity] = useState(item.quantity || 1);
-  const [basketItemsQuantity, setBasketItemsQuantity] = useState(item.basketItem || [])
+  const [basketItemsQuantity, setBasketItemsQuantity] = useState(item.basketItem ?? [])
 
   const updateItem = api.checklist.updateItem.useMutation({
     onMutate: async (vars) => {
@@ -115,6 +111,7 @@ export default function ChecklistItemRow({
     setWash(item.wash);
     setItemValue(item.itemValue);
     setQuantity(item.quantity);
+    setBasketItemsQuantity(item.basketItem ?? []);
   }, [item.publicId]);
 
   const sanitizeHtmlToPlainText = (html: string): string =>

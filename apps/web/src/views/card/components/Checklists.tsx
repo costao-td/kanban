@@ -7,7 +7,7 @@ import ChecklistItemRow from "./ChecklistItemRow";
 import ChecklistNameInput from "./ChecklistNameInput";
 import NewChecklistItemForm from "./NewChecklistItemForm";
 
-interface BasketItemProps {
+export interface BasketItemProps {
   name: string;
   quantity: number;
 }
@@ -21,7 +21,7 @@ interface ChecklistItem {
   itemValue: number;
   itemIdentity: string;
   quantity: number;
-  basketItem: BasketItemProps[];
+  basketItem: BasketItemProps[] | null;
 }
 
 interface Checklist {
@@ -36,7 +36,7 @@ interface ChecklistsProps {
   activeChecklistForm?: string | null;
   setActiveChecklistForm?: (id: string | null) => void;
   viewOnly?: boolean;
-  deliveryType: string;
+  deliveryType: "Express" | "Normal";
 }
 
 export default function Checklists({
@@ -49,7 +49,7 @@ export default function Checklists({
 }: ChecklistsProps) {
   const { openModal } = useModal();
 
-  const EXPRESS_MULTIPLYIER: number = 2
+  const EXPRESS_MULTIPLIER: number = 2
   const BASKET_ITEM_PRICE: number = 5
 
   if (!checklists || checklists.length === 0) return null;
@@ -157,7 +157,7 @@ export default function Checklists({
                       (item.quantity || 0) * (item.itemValue || 0) +
                       (item.basketItem?.reduce((sum, bi) => sum + (bi.quantity || 0), 0) || 0) * BASKET_ITEM_PRICE,
                     0,
-                  ) * (deliveryType === "Express" ? EXPRESS_MULTIPLYIER : 1))
+                  ) * (deliveryType === "Express" ? EXPRESS_MULTIPLIER : 1))
                   .toFixed(2)}
               </div>
               {deliveryType === "Express" && (
