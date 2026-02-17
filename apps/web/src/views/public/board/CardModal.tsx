@@ -37,11 +37,7 @@ export function CardModal({
 
   const labels = data?.labels ?? [];
 
-  const deliveryLabelNames = ["Normal", "Express"];
-  const deliveryLabel = labels.find((label) =>
-    deliveryLabelNames.includes(label.name)
-  );
-  const deliveryType = deliveryLabel?.name || "Normal";
+  const deliveryType = labels.some(label => label.name === "Express") ? "Express" : "Normal";
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
