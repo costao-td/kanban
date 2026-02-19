@@ -29,7 +29,7 @@ export const cardRouter = createTRPCRouter({
         title: z.string().min(1),
         description: z.string().max(10000),
         hospedeName: z.string().min(1).max(100),
-        hospedeDocumento: z.string().min(11).max(30),
+        hospedeDocumento: z.string().min(5).max(30),
         hospedeTelefone: z.string().min(10).max(20),
         hospedeApartamento: z.string().min(1).max(8),
         tipoEntrega: z.enum(["normal", "express"]),

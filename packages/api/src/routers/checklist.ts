@@ -26,6 +26,12 @@ const checklistItemSchema = z.object({
   wash: z.boolean(),
   iron: z.boolean(),
   completed: z.boolean(),
+  basketItem: z.array(
+    z.object({
+      name: z.string(),
+      quantity: z.number(),
+    })
+  ).nullable().optional(),
 });
 
 export const checklistRouter = createTRPCRouter({
@@ -229,6 +235,12 @@ export const checklistRouter = createTRPCRouter({
         quantity: z.number(),
         wash: z.boolean(),
         iron: z.boolean(),
+        basketItem: z.array(
+          z.object({
+            name: z.string(),
+            quantity: z.number(),
+          })
+        ).nullable().optional(),
       }),
     )
     .output(checklistItemSchema)
@@ -265,6 +277,7 @@ export const checklistRouter = createTRPCRouter({
         quantity: input.quantity,
         wash: input.wash,
         iron: input.iron,
+        basketItem: input.basketItem,
         createdBy: userId,
         checklistId: checklist.id,
       });
@@ -305,6 +318,12 @@ export const checklistRouter = createTRPCRouter({
         wash: z.boolean().optional(),
         iron: z.boolean().optional(),
         completed: z.boolean().optional(),
+        basketItem: z.array(
+          z.object({
+            name: z.string(),
+            quantity: z.number(),
+          })
+        ).nullable().optional(),
       }),
     )
     .output(checklistItemSchema)
@@ -343,6 +362,7 @@ export const checklistRouter = createTRPCRouter({
         iron: input.iron,
         wash: input.wash,
         quantity: input.quantity || undefined,
+        basketItem: input.basketItem,
       });
 
       if (!updated)
@@ -374,7 +394,7 @@ export const checklistRouter = createTRPCRouter({
         });
       }
 
-      return updated;
+      return checklistItemSchema.parse(updated);
     }),
   deleteItem: protectedProcedure
     .meta({

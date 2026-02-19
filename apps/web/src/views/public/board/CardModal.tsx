@@ -37,6 +37,8 @@ export function CardModal({
 
   const labels = data?.labels ?? [];
 
+  const deliveryType = labels.some(label => label.name === "Express") ? "Express" : "Normal";
+
   const handleScroll = () => {
     if (!scrollRef.current) return;
 
@@ -133,6 +135,7 @@ export function CardModal({
                   checklists={data.checklists}
                   cardPublicId={cardPublicId ?? ""}
                   viewOnly
+                  deliveryType={deliveryType}
                 />
               )}
               <div className="border-t-[1px] border-light-600 pb-4 pt-12 dark:border-dark-400">

@@ -372,6 +372,7 @@ export const getWithListAndMembersByPublicId = async (
               itemValue: true,
               itemIdentity: true,
               quantity: true,
+              basketItem: true,
               index: true,
             },
             where: isNull(checklistItems.deletedAt),
