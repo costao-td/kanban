@@ -51,6 +51,7 @@ export const createItem = async (
     quantity: number;
     wash: boolean;
     iron: boolean;
+    basketItem?: { name: string; quantity: number }[] | null;
     createdBy: string;
   },
 ) => {
@@ -73,6 +74,7 @@ export const createItem = async (
     quantity: checklistItemInput.quantity,
     wash: checklistItemInput.wash,
     iron: checklistItemInput.iron,
+    basketItem: checklistItemInput.basketItem ?? null,
     createdBy: checklistItemInput.createdBy,
     checklistId: checklistItemInput.checklistId,
     index: lastItem ? Number(lastItem.index) + 1 : 0, 
@@ -88,6 +90,7 @@ export const createItem = async (
     wash: checklistItems.wash,
     iron: checklistItems.iron,
     completed: checklistItems.completed,
+    basketItem: checklistItems.basketItem,
   });
 
     return result;
@@ -162,6 +165,7 @@ export const updateItemById = async (
     quantity?: number;
     iron?: boolean;
     wash?: boolean;
+    basketItem?: { name: string; quantity: number }[] | null;
     },
 ) => {
   const [result] = await db
@@ -172,6 +176,7 @@ export const updateItemById = async (
       ...(args.iron !== undefined ? { iron: args.iron } : {}),
       ...(args.wash !== undefined ? { wash: args.wash } : {}),
       ...(args.quantity !== undefined ? { quantity: args.quantity } : {}),
+      ...(args.basketItem !== undefined ? { basketItem: args.basketItem } : {}),
       updatedAt: new Date(),
     })
     .where(eq(checklistItems.id, args.id))
@@ -182,6 +187,9 @@ export const updateItemById = async (
       iron: checklistItems.iron,
       wash: checklistItems.wash,
       quantity: checklistItems.quantity,
+      itemValue: checklistItems.itemValue,
+      itemIdentity: checklistItems.itemIdentity,
+      basketItem: checklistItems.basketItem,
     });
 
   return result;

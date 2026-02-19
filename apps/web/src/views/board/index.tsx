@@ -202,11 +202,8 @@ export default function BoardPage() {
     }
   }, [isSuccess, boardData, setValue]);
 
-  const [prevNovoPedidoCount, prevProntoParaColeta, isInitialRun] = [
-    useRef<number>(0),
-    useRef<number>(0),
-    useRef<boolean>(true),
-  ];
+  const prevNovoPedidoCount = useRef<number | null>(null);
+  const prevProntoParaColeta = useRef<number | null>(null);
 
   useEffect(() => {
     if (!boardData) return;
@@ -224,18 +221,20 @@ export default function BoardPage() {
     const currentNewCount = novoPedidoList.cards.length;
     const currentDriverCount = readyPickupList.cards.length;
 
-    if (isInitialRun.current) {
-      isInitialRun.current = false;
-    } else {
-      if (currentNewCount > prevNovoPedidoCount.current) {
-        const audio = new Audio("/sounds/new-order.wav");
-        audio.play();
-      }
+    if (prevNovoPedidoCount.current === null) {
+      prevNovoPedidoCount.current = currentNewCount;
+      prevProntoParaColeta.current = currentDriverCount;
+      return;
+    }
 
-      if (currentDriverCount > prevProntoParaColeta.current) {
-        const audio = new Audio("/sounds/driver.wav");
-        audio.play();
-      }
+    if (currentNewCount > prevNovoPedidoCount.current) {
+      const audio = new Audio("/sounds/new-order.wav");
+      audio.play().catch((err) => console.error("Erro ao tocar som:", err));
+    }
+
+    if (currentDriverCount > prevProntoParaColeta.current) {
+      const audio = new Audio("/sounds/driver.wav");
+      audio.play().catch((err) => console.error("Erro ao tocar som:", err));
     }
 
     prevNovoPedidoCount.current = currentNewCount;

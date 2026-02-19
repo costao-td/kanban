@@ -114,11 +114,13 @@ export default function LabelSelector({
                     labelPublicId: other.key,
                   });
                 });
+            } else {
+              return;
             }
 
             addOrRemoveLabel.mutate({ cardPublicId, labelPublicId: label.key });
           }}
-          handleEdit={viewOnly ? undefined : (labelPublicId) => openModal("EDIT_LABEL", labelPublicId)}
+          // handleEdit={viewOnly ? undefined : (labelPublicId) => openModal("EDIT_LABEL", labelPublicId)}
           asChild
         >
           {selectedLabels.length ? (

@@ -31,6 +31,7 @@ import ListSelector from "./components/ListSelector";
 import MemberSelector from "./components/MemberSelector";
 import { NewChecklistForm } from "./components/NewChecklistForm";
 import NewCommentForm from "./components/NewCommentForm";
+import Input from "~/components/Input";
 
 interface FormValues {
   cardId: string;
@@ -166,6 +167,7 @@ export default function CardPage() {
   const [activeChecklistForm, setActiveChecklistForm] = useState<string | null>(
     null,
   );
+  const [showActivity, setShowActivity] = useState<boolean>(false);
 
   const cardId = Array.isArray(router.query.cardId)
     ? router.query.cardId[0]
@@ -209,6 +211,8 @@ export default function CardPage() {
   const packageLabel = formattedLabels.filter(label =>
     packageLabelNames.includes(label.value)
   );
+
+  const activeDeliveryLabels = (deliveryLabels?.filter((l: any) => l.selected))[0]
 
   const updateCard = api.card.update.useMutation({
     onError: () => {
@@ -520,6 +524,7 @@ export default function CardPage() {
                     viewOnly={
                       workspace.role != "admin" && workspace.role != "member"
                     }
+                    deliveryType={activeDeliveryLabels?.value === "Express" ? "Express" : "Normal"}
                   />
                   <div className="border-t-[1px] border-light-300 pt-12 dark:border-dark-300">
                     <h2 className="text-md pb-4 font-medium text-light-1000 dark:text-dark-1000">
@@ -528,13 +533,26 @@ export default function CardPage() {
                     <div className="mt-6">
                       <NewCommentForm cardPublicId={cardId} />
                     </div>
-                    <div>
-                      <ActivityList
-                        cardPublicId={cardId}
-                        activities={activities ?? []}
-                        isLoading={!card}
-                        isAdmin={workspace.role === "admin"}
+                    <div className="pt-4">
+                      <div>
+                      <input                      
+                      type="checkbox"
+                      onChange={(e) => (
+                        setShowActivity(e.target.checked)
+                      )}
+                      className="w-[20] h-[20] rounded-md border-neutral-400 text-black"
+                      id="show-activity-checkbox"
                       />
+                      <label htmlFor="show-activity-checkbox" className="p-4 text-neutral-600 text-sm">Mostrar atividades</label>
+                      </div>
+                      {showActivity && (
+                        <ActivityList
+                          cardPublicId={cardId}
+                          activities={activities ?? []}
+                          isLoading={!card}
+                          isAdmin={workspace.role === "admin"}
+                        />
+                      )}
                     </div>
                   </div>
                 </>

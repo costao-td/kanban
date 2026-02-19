@@ -7,6 +7,11 @@ import ChecklistItemRow from "./ChecklistItemRow";
 import ChecklistNameInput from "./ChecklistNameInput";
 import NewChecklistItemForm from "./NewChecklistItemForm";
 
+export interface BasketItemProps {
+  name: string;
+  quantity: number;
+}
+
 interface ChecklistItem {
   publicId: string;
   title: string;
@@ -16,6 +21,7 @@ interface ChecklistItem {
   itemValue: number;
   itemIdentity: string;
   quantity: number;
+  basketItem: BasketItemProps[] | null;
 }
 
 interface Checklist {
@@ -30,6 +36,7 @@ interface ChecklistsProps {
   activeChecklistForm?: string | null;
   setActiveChecklistForm?: (id: string | null) => void;
   viewOnly?: boolean;
+  deliveryType: "Express" | "Normal";
 }
 
 export default function Checklists({
@@ -38,8 +45,12 @@ export default function Checklists({
   activeChecklistForm,
   setActiveChecklistForm,
   viewOnly,
+  deliveryType
 }: ChecklistsProps) {
   const { openModal } = useModal();
+
+  const EXPRESS_MULTIPLIER: number = 2
+  const BASKET_ITEM_PRICE: number = 5
 
   if (!checklists || checklists.length === 0) return null;
 
@@ -129,22 +140,31 @@ export default function Checklists({
                       itemIdentity: item.itemIdentity,
                       itemValue: item.itemValue,
                       completed: item.completed,
+                      basketItem: item.basketItem,
                     }}
                     cardPublicId={cardPublicId}
                     viewOnly={viewOnly}
+                    basketItemPrice={BASKET_ITEM_PRICE}
                   />
                 ))}
               </div>
               <div className="flex w-full min-w-full justify-end pr-8 text-sm font-medium text-light-900 dark:text-dark-700">
-                Valor Total:{" "}
-                {checklist.items
+                Valor Total: {"R$ "}
+                {(checklist.items
                   .reduce(
                     (acc, item) =>
-                      acc + (item.itemValue || 0) * (item.quantity || 0),
+                      acc +
+                      (item.quantity || 0) * (item.itemValue || 0) +
+                      (item.basketItem?.reduce((sum, bi) => sum + (bi.quantity || 0), 0) || 0) * BASKET_ITEM_PRICE,
                     0,
-                  )
+                  ) * (deliveryType === "Express" ? EXPRESS_MULTIPLIER : 1))
                   .toFixed(2)}
               </div>
+              {deliveryType === "Express" && (
+                <p className="flex w-full min-w-full justify-end pr-8 text-xs text-light-900 dark:text-dark-700">
+                  Taxa Express Incluída
+                </p>
+              )}
               {activeChecklistForm === checklist.publicId && !viewOnly && (
                 <div className="ml-1">
                   <NewChecklistItemForm

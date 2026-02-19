@@ -4,9 +4,11 @@ import ContentEditable from "react-contenteditable";
 import { HiXMark } from "react-icons/hi2";
 import { twMerge } from "tailwind-merge";
 
+import QuantityInput from "~/components/QuantityInput";
 import { usePopup } from "~/providers/popup";
 import { useWorkspace } from "~/providers/workspace";
 import { api } from "~/utils/api";
+import { BasketItemProps } from "./Checklists";
 
 interface ChecklistItemRowProps {
   item: {
@@ -18,15 +20,18 @@ interface ChecklistItemRowProps {
     wash: boolean;
     iron: boolean;
     completed: boolean;
+    basketItem: BasketItemProps[] | null;
   };
   cardPublicId: string;
   viewOnly?: boolean;
+  basketItemPrice?: number;
 }
 
 export default function ChecklistItemRow({
   item,
   cardPublicId,
   viewOnly,
+  basketItemPrice,
 }: ChecklistItemRowProps) {
   const utils = api.useUtils();
   const { showPopup } = usePopup();
@@ -37,8 +42,9 @@ export default function ChecklistItemRow({
   const [completed, setCompleted] = useState(false);
   const [iron, setIron] = useState(item.iron);
   const [wash, setWash] = useState(item.wash);
-  const [itemValue, setItemValue] = useState(item.itemValue);
-  const [quantity, setQuantity] = useState(item.quantity);
+  const [itemValue, setItemValue] = useState(item.itemValue || 0);
+  const [quantity, setQuantity] = useState(item.quantity || 1);
+  const [basketItemsQuantity, setBasketItemsQuantity] = useState(item.basketItem ?? [])
 
   const updateItem = api.checklist.updateItem.useMutation({
     onMutate: async (vars) => {
@@ -105,6 +111,7 @@ export default function ChecklistItemRow({
     setWash(item.wash);
     setItemValue(item.itemValue);
     setQuantity(item.quantity);
+    setBasketItemsQuantity(item.basketItem ?? []);
   }, [item.publicId]);
 
   const sanitizeHtmlToPlainText = (html: string): string =>
@@ -155,7 +162,8 @@ export default function ChecklistItemRow({
   };
 
   const handleDelete = () => {
-    if (viewOnly) return;
+    const confirmDeleteItem = window.confirm("Deseja deletar esse item?")
+    if (viewOnly || !confirmDeleteItem) return;
     deleteItem.mutate({ checklistItemPublicId: item.publicId });
   };
 
@@ -267,29 +275,20 @@ export default function ChecklistItemRow({
 
           {/* Values */}
           <div className="flex flex-wrap items-center gap-3 text-sm">
-            <label className="flex items-center gap-1.5 text-neutral-700 dark:text-gray-300">
+            <div className="flex items-center gap-1.5 text-neutral-700 dark:text-gray-300">
               <span className="font-medium">Qtd:</span>
-              <input
-                type="number"
+              <QuantityInput
                 value={quantity}
-                min={1}
                 disabled={viewOnly}
-                onChange={(e) => {
-                  const val = parseInt(e.target.value, 10) || 1;
+                onChange={(val) => {
                   setQuantity(val);
                   updateItem.mutate({
                     checklistItemPublicId: item.publicId,
                     quantity: val,
                   });
                 }}
-                className={twMerge(
-                  "w-16 rounded border px-2 py-1 text-center text-sm",
-                  "border-light-300 bg-light-50 text-neutral-900",
-                  "dark:border-dark-600 dark:bg-dark-800 dark:text-gray-100",
-                  viewOnly ? "cursor-not-allowed opacity-50" : "cursor-text hover:border-light-400 dark:hover:border-dark-500",
-                )}
               />
-            </label>
+            </div>
 
             <div className="flex items-center gap-1.5 text-neutral-700 dark:text-gray-300">
               <span className="font-medium">Valor:</span>
@@ -301,11 +300,59 @@ export default function ChecklistItemRow({
             <div className="flex items-center gap-1.5 font-semibold text-neutral-900 dark:text-gray-100">
               <span>Total:</span>
               <span className="rounded bg-blue-50 px-2 py-1 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                R$ {(itemValue * quantity).toFixed(2)}
+                R$ {(((itemValue || 0) * (quantity || 1)) + (item.basketItem?.reduce((sum, bi) => sum + (bi.quantity || 0), 0) || 0) * (basketItemPrice || 5)).toFixed(2)}
               </span>
             </div>
           </div>
         </div>
+        {item?.basketItem?.length > 0 && (
+          <div className="p-4">
+            <p className="mb-2 text-neutral-700 dark:text-gray-100">Itens do cesto para passar</p>
+            <div className="flex flex-wrap gap-2">
+              {item?.basketItem?.map((i, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 rounded border border-light-300 bg-light-50 px-3 py-1.5 text-sm dark:border-dark-600 dark:bg-dark-800"
+                >
+                  <span className="text-neutral-700 dark:text-gray-300">{i.name}</span>
+                  <QuantityInput
+                    value={i.quantity}
+                    disabled={viewOnly}
+                    onChange={(val) => {
+                      const updatedBasketItems = basketItemsQuantity.map((basketItem, idx) => 
+                        idx === index ? { ...basketItem, quantity: val } : basketItem
+                      );
+                      setBasketItemsQuantity(updatedBasketItems);
+                      updateItem.mutate({
+                        checklistItemPublicId: item.publicId,
+                        basketItem: updatedBasketItems,
+                      });
+                    }}
+                  />
+                  {!viewOnly && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const confirmed = window.confirm("Deseja excluir este item?")
+                        if (!confirmed) return;
+                        const updatedBasketItems = basketItemsQuantity.filter((_, idx) => idx !== index);
+                        setBasketItemsQuantity(updatedBasketItems);
+                        updateItem.mutate({
+                          checklistItemPublicId: item.publicId,
+                          basketItem: updatedBasketItems,
+                        });
+                      }}
+                      className="text-neutral-500 hover:text-red-600 transition-colors"
+                      aria-label="Remover item"
+                    >
+                      <HiXMark size={16} />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+        </div>
+          )}
       </div>
     </div>
   );
