@@ -39,7 +39,7 @@ import VisibilityButton from "./components/VisibilityButton";
 type PublicListId = string;
 
 export default function BoardPage() {
-  const params = useParams() as { boardId: string[]; } | null;
+  const params = useParams() as { boardId: string[] } | null;
   const router = useRouter();
   const utils = api.useUtils();
   const { showPopup } = usePopup();
@@ -205,6 +205,40 @@ export default function BoardPage() {
   const prevNovoPedidoCount = useRef<number | null>(null);
   const prevProntoParaColeta = useRef<number | null>(null);
 
+  const sendNotification = async (title: string, tag: string) => {
+    if ("Notification" in window && Notification.permission === "granted") {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+
+        await registration.showNotification(title, {
+          tag: tag,
+          requireInteraction: true,
+        });
+      } catch (error) {
+        console.error("Error to send notification by service worker", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) {
+      throw new Error("No support for service worker!");
+    }
+
+    navigator.serviceWorker
+      .register("sw.js")
+      .then((registration) => {
+        console.log("Service worker registred");
+      })
+      .catch((err) => {
+        console.error("Error to register service worker", err);
+      });
+
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
+
   useEffect(() => {
     if (!boardData) return;
 
@@ -230,11 +264,15 @@ export default function BoardPage() {
     if (currentNewCount > prevNovoPedidoCount.current) {
       const audio = new Audio("/sounds/new-order.wav");
       audio.play().catch((err) => console.error("Erro ao tocar som:", err));
+
+      sendNotification("Novo pedido de lavanderia", "novo-pedido");
     }
 
-    if (currentDriverCount > prevProntoParaColeta.current) {
+    if (currentDriverCount > (prevProntoParaColeta.current ?? 0)) {
       const audio = new Audio("/sounds/driver.wav");
       audio.play().catch((err) => console.error("Erro ao tocar som:", err));
+
+      sendNotification("Pedido pronto para COLETA", "coleta");
     }
 
     prevNovoPedidoCount.current = currentNewCount;
@@ -364,7 +402,7 @@ export default function BoardPage() {
     );
   };
 
-  const isAdmin: boolean = workspace.role === "admin"
+  const isAdmin: boolean = workspace.role === "admin";
 
   return (
     <>
@@ -401,27 +439,28 @@ export default function BoardPage() {
 
           <div className="order-1 mb-4 flex items-center justify-end space-x-2 md:order-2 md:mb-0">
             <Button
-            type="button"
-            href="https://lavanderia.costao.com.br/?proprietario">
+              type="button"
+              href="https://lavanderia.costao.com.br/?proprietario"
+            >
               Pedido do Proprietário
             </Button>
             {isAdmin && (
-            <UpdateBoardSlugButton
-              handleOnClick={() => openModal("UPDATE_BOARD_SLUG")}
-              isLoading={isLoading}
-              workspaceSlug={workspace.slug ?? ""}
-              boardSlug={boardData?.slug ?? ""}
-            />
+              <UpdateBoardSlugButton
+                handleOnClick={() => openModal("UPDATE_BOARD_SLUG")}
+                isLoading={isLoading}
+                workspaceSlug={workspace.slug ?? ""}
+                boardSlug={boardData?.slug ?? ""}
+              />
             )}
             {isAdmin && (
               <VisibilityButton
-              visibility={boardData?.visibility ?? "private"}
-              boardPublicId={boardId ?? ""}
-              boardSlug={boardData?.slug ?? ""}
-              queryParams={queryParams}
-              isLoading={!boardData}
-              isAdmin={isAdmin}
-            />
+                visibility={boardData?.visibility ?? "private"}
+                boardPublicId={boardId ?? ""}
+                boardSlug={boardData?.slug ?? ""}
+                queryParams={queryParams}
+                isLoading={!boardData}
+                isAdmin={isAdmin}
+              />
             )}
             <Filters
               labels={boardData?.labels ?? []}
@@ -447,9 +486,7 @@ export default function BoardPage() {
             >
               Nova lista
             </Button>
-            {isAdmin && (
-            <BoardDropdown isLoading={!boardData} />
-            )}
+            {isAdmin && <BoardDropdown isLoading={!boardData} />}
           </div>
         </div>
 
@@ -534,12 +571,13 @@ export default function BoardPage() {
                                           }}
                                           key={card.publicId}
                                           href={`/cards/${card.publicId}`}
-                                          className={`mb-2 flex !cursor-pointer flex-col ${card.publicId.startsWith(
-                                            "PLACEHOLDER",
-                                          )
+                                          className={`mb-2 flex !cursor-pointer flex-col ${
+                                            card.publicId.startsWith(
+                                              "PLACEHOLDER",
+                                            )
                                               ? "pointer-events-none"
                                               : ""
-                                            }`}
+                                          }`}
                                           ref={provided.innerRef}
                                           {...provided.draggableProps}
                                           {...provided.dragHandleProps}
