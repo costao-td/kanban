@@ -80,6 +80,8 @@ export default function BoardPage() {
   } = api.board.byId.useQuery(queryParams, {
     enabled: !!boardId,
     placeholderData: keepPreviousData,
+    refetchInterval: 30000,
+    refetchIntervalInBackground: true,
   });
 
   const refetchBoard = async () => {
@@ -226,7 +228,7 @@ export default function BoardPage() {
     }
 
     navigator.serviceWorker
-      .register("sw.js")
+      .register("/sw.js")
       .then((registration) => {
         console.log("Service worker registred");
       })
