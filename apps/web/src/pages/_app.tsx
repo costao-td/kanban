@@ -11,6 +11,7 @@ import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 import { useEffect } from "react";
 
+import { useBoardNotification } from "~/hooks/useBoardNotifications";
 import { LinguiProviderWrapper } from "~/providers/lingui";
 import { ModalProvider } from "~/providers/modal";
 import { PopupProvider } from "~/providers/popup";
@@ -33,6 +34,12 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+};
+
+const GlobalNotificationListener = () => {
+  const boardId: string = "q12dwmkr8rg8";
+  useBoardNotification(boardId);
+  return null;
 };
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
@@ -80,6 +87,7 @@ const MyApp: AppType = ({ Component, pageProps }: AppPropsWithLayout) => {
       )}
       <script src="/__ENV.js" />
       <main className="font-sans">
+        <GlobalNotificationListener />
         <LinguiProviderWrapper>
           <ThemeProvider>
             <ModalProvider>

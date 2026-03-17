@@ -80,8 +80,6 @@ export default function BoardPage() {
   } = api.board.byId.useQuery(queryParams, {
     enabled: !!boardId,
     placeholderData: keepPreviousData,
-    refetchInterval: 30000,
-    refetchIntervalInBackground: true,
   });
 
   const refetchBoard = async () => {
@@ -203,83 +201,6 @@ export default function BoardPage() {
       setValue("name", boardData.name || "");
     }
   }, [isSuccess, boardData, setValue]);
-
-  const prevNovoPedidoCount = useRef<number | null>(null);
-  const prevProntoParaColeta = useRef<number | null>(null);
-
-  const sendNotification = async (title: string, tag: string) => {
-    if ("Notification" in window && Notification.permission === "granted") {
-      try {
-        const registration = await navigator.serviceWorker.ready;
-
-        await registration.showNotification(title, {
-          tag: tag,
-          requireInteraction: true,
-        });
-      } catch (error) {
-        console.error("Error to send notification by service worker", error);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (!("serviceWorker" in navigator)) {
-      throw new Error("No support for service worker!");
-    }
-
-    navigator.serviceWorker
-      .register("/sw.js")
-      .then((registration) => {
-        console.log("Service worker registred");
-      })
-      .catch((err) => {
-        console.error("Error to register service worker", err);
-      });
-
-    if ("Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!boardData) return;
-
-    const novoPedidoList = boardData.lists.find(
-      (list) => list.name.toLowerCase() === "novo pedido",
-    );
-    if (!novoPedidoList) return;
-
-    const readyPickupList = boardData.lists.find(
-      (list) => list.name.toLowerCase() === "pronto para coleta",
-    );
-    if (!readyPickupList) return;
-
-    const currentNewCount = novoPedidoList.cards.length;
-    const currentDriverCount = readyPickupList.cards.length;
-
-    if (prevNovoPedidoCount.current === null) {
-      prevNovoPedidoCount.current = currentNewCount;
-      prevProntoParaColeta.current = currentDriverCount;
-      return;
-    }
-
-    if (currentNewCount > prevNovoPedidoCount.current) {
-      const audio = new Audio("/sounds/new-order.wav");
-      audio.play().catch((err) => console.error("Erro ao tocar som:", err));
-
-      sendNotification("Novo pedido de lavanderia", "novo-pedido");
-    }
-
-    if (currentDriverCount > (prevProntoParaColeta.current ?? 0)) {
-      const audio = new Audio("/sounds/driver.wav");
-      audio.play().catch((err) => console.error("Erro ao tocar som:", err));
-
-      sendNotification("Pedido pronto para COLETA", "coleta");
-    }
-
-    prevNovoPedidoCount.current = currentNewCount;
-    prevProntoParaColeta.current = currentDriverCount;
-  }, [boardData?.lists.map((list) => list.cards.length).join(",")]);
 
   const openNewListForm = (publicBoardId: string) => {
     openModal("NEW_LIST");
