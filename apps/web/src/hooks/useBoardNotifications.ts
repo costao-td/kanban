@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import { api } from "../utils/api";
 
-export const useBoardNotification = (boardId: string) => {
+export const useBoardNotification = (boardId: string, isReady: boolean) => {
   const prevNovoPedidoCount = useRef<number | null>(null);
   const prevProntoParaColeta = useRef<number | null>(null);
 
@@ -16,8 +16,8 @@ export const useBoardNotification = (boardId: string) => {
 
     navigator.serviceWorker
       .register("/sw.js")
-      .then((registration) => {
-        console.log("Service worker registred", registration);
+      .then(() => {
+        console.log("Service worker registred");
       })
       .catch((err) => {
         console.error("Error to register service worker", err);
@@ -31,7 +31,7 @@ export const useBoardNotification = (boardId: string) => {
   const { data: boardData } = api.board.byId.useQuery(
     { boardPublicId: boardId },
     {
-      enabled: !!boardId,
+      enabled: !!boardId && isReady,
       refetchInterval: 15000,
       refetchIntervalInBackground: true,
     },

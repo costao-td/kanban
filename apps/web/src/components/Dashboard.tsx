@@ -8,12 +8,11 @@ import {
 
 import { authClient } from "@kan/auth/client";
 
+import { useBoardNotification } from "~/hooks/useBoardNotifications";
 import { useClickOutside } from "~/hooks/useClickOutside";
 import { useModal } from "~/providers/modal";
 import { useTheme } from "~/providers/theme";
 import { WorkspaceProvider } from "~/providers/workspace";
-import FeedbackModal from "./FeedbackModal";
-import Modal from "./modal";
 import SideNavigation from "./SideNavigation";
 
 interface DashboardProps {
@@ -28,11 +27,13 @@ export function getDashboardLayout(
   hasRightPanel = false,
 ) {
   return (
-    <WorkspaceProvider>
-      <Dashboard rightPanel={rightPanel} hasRightPanel={hasRightPanel}>
-        {page}
-      </Dashboard>
-    </WorkspaceProvider>
+    <>
+      <WorkspaceProvider>
+        <Dashboard rightPanel={rightPanel} hasRightPanel={hasRightPanel}>
+          {page}
+        </Dashboard>
+      </WorkspaceProvider>
+    </>
   );
 }
 
@@ -53,6 +54,10 @@ export default function Dashboard({
   const rightPanelRef = useRef<HTMLDivElement>(null);
   const sideNavButtonRef = useRef<HTMLButtonElement>(null);
   const rightPanelButtonRef = useRef<HTMLButtonElement>(null);
+
+  const isReady = !!session && !sessionLoading;
+  const boardId: string = "q12dwmkr8rg8";
+  useBoardNotification(boardId, isReady);
 
   const toggleSideNav = () => {
     setIsSideNavOpen(!isSideNavOpen);
