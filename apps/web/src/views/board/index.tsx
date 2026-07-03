@@ -39,7 +39,7 @@ import VisibilityButton from "./components/VisibilityButton";
 type PublicListId = string;
 
 export default function BoardPage() {
-  const params = useParams() as { boardId: string[]; } | null;
+  const params = useParams() as { boardId: string[] } | null;
   const router = useRouter();
   const utils = api.useUtils();
   const { showPopup } = usePopup();
@@ -202,45 +202,6 @@ export default function BoardPage() {
     }
   }, [isSuccess, boardData, setValue]);
 
-  const prevNovoPedidoCount = useRef<number | null>(null);
-  const prevProntoParaColeta = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (!boardData) return;
-
-    const novoPedidoList = boardData.lists.find(
-      (list) => list.name.toLowerCase() === "novo pedido",
-    );
-    if (!novoPedidoList) return;
-
-    const readyPickupList = boardData.lists.find(
-      (list) => list.name.toLowerCase() === "pronto para coleta",
-    );
-    if (!readyPickupList) return;
-
-    const currentNewCount = novoPedidoList.cards.length;
-    const currentDriverCount = readyPickupList.cards.length;
-
-    if (prevNovoPedidoCount.current === null) {
-      prevNovoPedidoCount.current = currentNewCount;
-      prevProntoParaColeta.current = currentDriverCount;
-      return;
-    }
-
-    if (currentNewCount > prevNovoPedidoCount.current) {
-      const audio = new Audio("/sounds/new-order.wav");
-      audio.play().catch((err) => console.error("Erro ao tocar som:", err));
-    }
-
-    if (currentDriverCount > prevProntoParaColeta.current) {
-      const audio = new Audio("/sounds/driver.wav");
-      audio.play().catch((err) => console.error("Erro ao tocar som:", err));
-    }
-
-    prevNovoPedidoCount.current = currentNewCount;
-    prevProntoParaColeta.current = currentDriverCount;
-  }, [boardData?.lists.map((list) => list.cards.length).join(",")]);
-
   const openNewListForm = (publicBoardId: string) => {
     openModal("NEW_LIST");
     setSelectedPublicListId(publicBoardId);
@@ -364,7 +325,7 @@ export default function BoardPage() {
     );
   };
 
-  const isAdmin: boolean = workspace.role === "admin"
+  const isAdmin: boolean = workspace.role === "admin";
 
   return (
     <>
@@ -401,27 +362,28 @@ export default function BoardPage() {
 
           <div className="order-1 mb-4 flex items-center justify-end space-x-2 md:order-2 md:mb-0">
             <Button
-            type="button"
-            href="https://lavanderia.costao.com.br/?proprietario">
+              type="button"
+              href="https://lavanderia.costao.com.br/?proprietario"
+            >
               Pedido do Proprietário
             </Button>
             {isAdmin && (
-            <UpdateBoardSlugButton
-              handleOnClick={() => openModal("UPDATE_BOARD_SLUG")}
-              isLoading={isLoading}
-              workspaceSlug={workspace.slug ?? ""}
-              boardSlug={boardData?.slug ?? ""}
-            />
+              <UpdateBoardSlugButton
+                handleOnClick={() => openModal("UPDATE_BOARD_SLUG")}
+                isLoading={isLoading}
+                workspaceSlug={workspace.slug ?? ""}
+                boardSlug={boardData?.slug ?? ""}
+              />
             )}
             {isAdmin && (
               <VisibilityButton
-              visibility={boardData?.visibility ?? "private"}
-              boardPublicId={boardId ?? ""}
-              boardSlug={boardData?.slug ?? ""}
-              queryParams={queryParams}
-              isLoading={!boardData}
-              isAdmin={isAdmin}
-            />
+                visibility={boardData?.visibility ?? "private"}
+                boardPublicId={boardId ?? ""}
+                boardSlug={boardData?.slug ?? ""}
+                queryParams={queryParams}
+                isLoading={!boardData}
+                isAdmin={isAdmin}
+              />
             )}
             <Filters
               labels={boardData?.labels ?? []}
@@ -447,9 +409,7 @@ export default function BoardPage() {
             >
               Nova lista
             </Button>
-            {isAdmin && (
-            <BoardDropdown isLoading={!boardData} />
-            )}
+            {isAdmin && <BoardDropdown isLoading={!boardData} />}
           </div>
         </div>
 
@@ -534,12 +494,13 @@ export default function BoardPage() {
                                           }}
                                           key={card.publicId}
                                           href={`/cards/${card.publicId}`}
-                                          className={`mb-2 flex !cursor-pointer flex-col ${card.publicId.startsWith(
-                                            "PLACEHOLDER",
-                                          )
+                                          className={`mb-2 flex !cursor-pointer flex-col ${
+                                            card.publicId.startsWith(
+                                              "PLACEHOLDER",
+                                            )
                                               ? "pointer-events-none"
                                               : ""
-                                            }`}
+                                          }`}
                                           ref={provided.innerRef}
                                           {...provided.draggableProps}
                                           {...provided.dragHandleProps}
