@@ -363,7 +363,7 @@ export default function CardPage() {
                     >
                         <div className="flex items-center gap-10">
                           <div>
-                          <p className="my-2 mb-2 pt-2 w-full text-sm font-medium">Tipo de Serviço</p>
+                          <p className="my-2 mb-2 pt-2 w-full text-sm font-medium dark:text-dark-1000">Tipo de Serviço</p>
                           <LabelSelector
                             cardPublicId={cardId ?? ""}
                             labels={deliveryLabels}
@@ -372,7 +372,7 @@ export default function CardPage() {
                           />
                           </div>
                           <div>
-                          <p className="my-2 mb-2 pt-2 w-full text-sm font-medium">Tipo de Entrega</p>
+                          <p className="my-2 mb-2 pt-2 w-full text-sm font-medium dark:text-dark-1000">Tipo de Entrega</p>
                           <LabelSelector
                             cardPublicId={cardId ?? ""}
                             labels={packageLabel}
@@ -384,7 +384,7 @@ export default function CardPage() {
 
                         <div className="flex flex-col justify-between gap-4 pt-4 text-sm md:flex-row md:items-center">
                           <div>
-                            <p className="pb-2">Mudar Status do pedido</p>
+                            <p className= "dark:text-dark-1000">Mudar Status do pedido</p>
                             <ListSelector
                               cardPublicId={cardId ?? ""}
                               lists={formattedLists}
@@ -394,13 +394,13 @@ export default function CardPage() {
                           {!isGuest && (
                             <>
                               <div>
-                                <p>Retirado do Apartamento</p>
+                                <p className= "dark:text-dark-1000">Retirado do Apartamento</p>
                                 <Select
                                   name="motoristaColeta"
                                   aria-label="Project status"
                                   onChange={handleMotoristaColetaChange}
                                   value={card.motoristaColeta ?? ""}
-                                  className="w-full rounded-md border border-neutral-400 bg-neutral-50 px-8 py-1 text-sm"
+                                  className="w-full rounded-md border border-neutral-400 bg-neutral-50 dark:bg-dark-200 px-8 py-1 text-sm dark:text-dark-1000"
                                 >
                                   <option value="" disabled>
                                     {" "}
@@ -421,13 +421,13 @@ export default function CardPage() {
                                 </Select>
                               </div>
                               <div>
-                                <p>Retirado da Lavanderia</p>
+                                <p className= "dark:text-dark-1000">Retirado da Lavanderia</p>
                                 <Select
                                   name="motoristaEntrega"
                                   aria-label="Project status"
                                   onChange={handleMotoristaEntregaChange}
                                   value={card.motoristaEntrega ?? ""}
-                                  className="w-full rounded-md border border-neutral-400 bg-neutral-50 px-8 py-1 text-sm"
+                                  className="w-full rounded-md border border-neutral-400 bg-neutral-50 dark:bg-dark-200 px-8 py-1 text-sm dark:text-dark-1000"
                                 >
                                   <option value="" disabled>
                                     {" "}
@@ -499,7 +499,7 @@ export default function CardPage() {
                     </form>
                   </div>
                   <div className="pb-8">
-                    <p className="my-2 mb-2 w-ful text-sm font-medium">Observações</p>
+                    <p className="my-2 mb-2 w-ful text-sm font-medium dark:text-dark-1000">Observações</p>
                     <Editor
                       content={card.description}
                       onChange={(e) => setValue("description", e)}
@@ -527,7 +527,7 @@ export default function CardPage() {
                     deliveryType={activeDeliveryLabels?.value === "Express" ? "Express" : "Normal"}
                   />
                   <div className="border-t-[1px] border-light-300 pt-12 dark:border-dark-300">
-                    <h2 className="text-md pb-4 font-medium text-light-1000 dark:text-dark-1000">
+                    <h2 className="text-md font-medium text-light-1000 dark:text-dark-1000">
                       {t`Activity`}
                     </h2>
                     <div className="mt-6">
