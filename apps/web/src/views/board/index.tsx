@@ -360,29 +360,13 @@ export default function BoardPage() {
             </p>
           )}
 
-          <div className="order-1 mb-4 flex items-center justify-end space-x-2 md:order-2 md:mb-0">
-            <Button
-              type="button"
-              href="https://lavanderia.costao.com.br/?proprietario"
-            >
-              Pedido do Proprietário
-            </Button>
+          <div className="order-2 mb-4 flex flex-wrap space-y-1 gap-1 items-center space-x-2 md:mb-0">
             {isAdmin && (
               <UpdateBoardSlugButton
                 handleOnClick={() => openModal("UPDATE_BOARD_SLUG")}
                 isLoading={isLoading}
                 workspaceSlug={workspace.slug ?? ""}
                 boardSlug={boardData?.slug ?? ""}
-              />
-            )}
-            {isAdmin && (
-              <VisibilityButton
-                visibility={boardData?.visibility ?? "private"}
-                boardPublicId={boardId ?? ""}
-                boardSlug={boardData?.slug ?? ""}
-                queryParams={queryParams}
-                isLoading={!boardData}
-                isAdmin={isAdmin}
               />
             )}
             <Filters
@@ -394,7 +378,23 @@ export default function BoardPage() {
               }
               position="left"
               isLoading={!boardData}
-            />
+              />
+              {isAdmin && (
+                <VisibilityButton
+                  visibility={boardData?.visibility ?? "private"}
+                  boardPublicId={boardId ?? ""}
+                  boardSlug={boardData?.slug ?? ""}
+                  queryParams={queryParams}
+                  isLoading={!boardData}
+                  isAdmin={isAdmin}
+                />
+              )}
+            <Button
+              type="button"
+              href="https://lavanderia.costao.com.br/?proprietario"
+            >
+              Pedido do Proprietário
+            </Button>
             <Button
               iconLeft={
                 <HiOutlinePlusSmall
@@ -474,7 +474,7 @@ export default function BoardPage() {
                                 <div
                                   ref={provided.innerRef}
                                   {...provided.droppableProps}
-                                  className="scrollbar-track-rounded-[4px] scrollbar-thumb-rounded-[4px] scrollbar-w-[8px] z-10 h-full max-h-[calc(100vh-225px)] min-h-[2rem] overflow-y-auto pr-1 scrollbar dark:scrollbar-track-dark-100 dark:scrollbar-thumb-dark-600"
+                                  className="scrollbar-track-rounded-[4px] pb-24 md:pb-0 scrollbar-thumb-rounded-[4px] scrollbar-w-[8px] z-10 h-full max-h-[calc(100vh-225px)] min-h-[2rem] overflow-y-auto pr-1 scrollbar dark:scrollbar-track-dark-100 dark:scrollbar-thumb-dark-600"
                                 >
                                   {list.cards.map((card, index) => (
                                     <Draggable
