@@ -54,6 +54,8 @@ Para rodar a aplicação simulando a infraestrutura completa de contêineres e p
 
 Nesse modo a aplicação já sobe dentro do contêiner `web`, então não é necessário rodar `pnpm run dev`. Ele só é usado na Execução Local, quando apenas o banco está no docker, para ter hot reload.
 
+4. Rode a aplicação de formulário (lav-front), com a URL da api no .env apontando para a porta do Kanban.
+
 ## Produção
 Link para a aplicação em produção: [adm.lavanderia.costao.com.br](https://adm.lavanderia.costao.com.br)
 
